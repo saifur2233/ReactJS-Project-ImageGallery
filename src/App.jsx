@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import galleryList from "./data.js";
 import ImageCard from "./components/ImageCard.jsx";
+import Swal from "sweetalert2";
 
 const App = () => {
   const [flag, setFlag] = useState(false);
   const [images, setImages] = useState(galleryList);
   const [checkedImages, setCheckedImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const handleCheckedImages = (checkedImageId) => {
     setFlag(true);
     if (checkedImages.includes(checkedImageId)) {
@@ -15,8 +17,27 @@ const App = () => {
     }
   };
   const handleDeleteAll = () => {
-    setCheckedImages([]);
-    window.location.reload();
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setIsLoading(true);
+        setTimeout(() => {
+          setCheckedImages([]);
+          setIsLoading(false);
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          window.location.reload();
+        }, 2000);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire("Cancelled", "Your file is safe :)", "error");
+      }
+    });
   };
   useEffect(() => {
     if (checkedImages.length === 0) {
@@ -47,7 +68,6 @@ const App = () => {
             </div>
 
             <div className="">
-              {" "}
               <button
                 onClick={handleDeleteAll}
                 className="text-xl px-10 pt-5  font-medium text-red-700"
@@ -61,20 +81,30 @@ const App = () => {
         )}
 
         <hr className="border-t-xs border-gray-400 my-8" />
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 px-10">
-          {React.Children.toArray(
-            images.map((image, index) => (
-              <ImageCard
-                src={image.img}
-                title={image.title}
-                id={image.id}
-                index={index}
-                moveImage={moveImage}
-                handleCheckedImages={handleCheckedImages}
-              />
-            ))
-          )}
-        </div>
+        {isLoading ? (
+          <div className="flex text-slate-600 items-center p-10 justify-center h-full">
+            <div
+              className="inline-block   h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              role="status"
+            ></div>
+            <span className="px-5">Loading... </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 px-10">
+            {React.Children.toArray(
+              images.map((image, index) => (
+                <ImageCard
+                  src={image.img}
+                  title={image.title}
+                  id={image.id}
+                  index={index}
+                  moveImage={moveImage}
+                  handleCheckedImages={handleCheckedImages}
+                />
+              ))
+            )}
+          </div>
+        )}
       </div>
     </main>
   );

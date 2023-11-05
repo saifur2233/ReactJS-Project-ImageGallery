@@ -54,35 +54,41 @@ const ImageCard = ({
       };
     },
   });
-  const opacity = isDragging ? 0 : 1;
+
   drag(drop(ref));
+
   return (
     <>
       <div
         ref={ref}
-        style={{ opacity }}
-        className={`relative ${
+        className={`relative w-11/12 rounded border-2   border-gray-200 ${
           index === 0
-            ? "lg:row-span-2 lg:col-span-2 "
-            : "lg:col-span-1 sm:col-span-1"
-        }`}
+            ? "lg:row-span-2 lg:col-span-2  "
+            : "lg:col-span-1 sm:col-span-1 "
+        } ${isDragging ? "opacity-30 " : "opacity-100"}`}
       >
-        <div className=" rounded border border-gray-300  cursor-pointer">
-          <label className="relative">
-            <img
-              src={src}
-              alt={title}
-              className="w-full h-full object-cover "
-            />
-            <div className="overlay transition duration-300 ease-in-out opacity-0 hover:opacity-25 bg-black absolute w-full h-full top-0 left-0 flex items-center justify-center"></div>
-            <input
-              type="checkbox"
-              className="absolute top-4 left-4"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
-            />
-          </label>
-        </div>
+        <label className="relative">
+          <img
+            src={src}
+            alt={title}
+            className={`w-full h-full transition-transform duration-300 ${
+              isChecked ? "scale-100 overflow-hidden" : "scale-90"
+            }`}
+          />
+          <div
+            className={`overlay transition duration-300 ease-in-out opacity-0 hover:opacity-50 bg-black absolute w-full h-full top-0 left-0 flex items-center justify-center${
+              isChecked
+                ? "overlay transition duration-300 ease-in-out opacity-50 bg-black absolute w-full h-full top-0 left-0 flex items-center justify-center"
+                : "opacity-100"
+            }`}
+          ></div>
+          <input
+            type="checkbox"
+            className="absolute top-4 left-4"
+            checked={isChecked}
+            onChange={handleCheckboxChange}
+          />
+        </label>
       </div>
     </>
   );
